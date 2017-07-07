@@ -47,7 +47,7 @@ routing完整定义如下
     public static func routing(url: String?, object: Any? = nil, from vc: UIViewController? = nil, completion: JMRouterCompletionClosure? = nil) -> Bool
 ```
 
-另外如果是应用内自己使用，建议用宏的模式，更方便
+另外如果是应用内使用，建议用枚举的模式，更方便
 
 ```
 /// 应用内使用枚举方式跳转更方便
