@@ -47,7 +47,14 @@ routing完整定义如下
     public static func routing(url: String?, object: Any? = nil, from vc: UIViewController? = nil, completion: JMRouterCompletionClosure? = nil) -> Bool
 ```
 
+另外如果是应用内自己使用，建议用宏的模式，更方便
 
+```
+/// 应用内使用枚举方式跳转更方便
+JMRouter.goto(.home, from: self) { resrult, homeVc in
+    YYHud.showTip(resrult ? "操作成功" : "操作失败")
+}
+```
 
 当然，为了能简单使用，我们还会有些使用前准备工作😀
 
@@ -96,7 +103,7 @@ routing完整定义如下
 
 
 
-**demo中更为详细的例子，使用前可以先看看**
+demo中更为详细的例子，使用前可以先看看
 
 
 ## 更详细的定制
