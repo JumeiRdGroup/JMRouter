@@ -24,7 +24,7 @@ public protocol Routable {
 }
 
 /// 一些默认值
-extension Routable {
+public extension Routable {
     static var routeUrl: String { return JMRouter.pageRoot + routePath.rawValue + "/"}
     static var routeAnimation: JMRouter.Animation { return .push(animated:true) }
 }
@@ -106,7 +106,7 @@ extension UIViewController {
     }
 }
 
-extension JMRouter {
+public extension JMRouter {
     static func makePhoneCall(_ number: String?) {
         guard let number = number, number.isNotBlank else { return }
         let url = "tel://" + number

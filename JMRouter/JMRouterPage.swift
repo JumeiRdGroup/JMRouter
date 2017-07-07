@@ -10,9 +10,9 @@ import UIKit
 
 // MARK: - Page相关
 
-extension JMRouter {
-    static let pageHost = "page"
-    static let pageRoot = schemes.first ?? "router" + "://" + JMRouter.pageHost + "/"
+public extension JMRouter {
+    public static let pageHost = "page"
+    public static let pageRoot = schemes.first ?? "router" + "://" + JMRouter.pageHost + "/"
     
     /// 类名和枚举值的映射表
     public static var pagePathMap:[JMRouter.Page: String] = [:]

@@ -95,9 +95,9 @@
 			isa = PBXGroup;
 			children = (
 				EE4236EF1F0E3ED7003DD126 /* JMRouter.swift */,
+				EE4236F21F0E3ED7003DD126 /* JMRouterPage.swift */,
 				EE4236F01F0E3ED7003DD126 /* JMRouterAction.swift */,
 				EE4236F11F0E3ED7003DD126 /* JMRouterFoundation.swift */,
-				EE4236F21F0E3ED7003DD126 /* JMRouterPage.swift */,
 			);
 			name = JMRouter;
 			path = ../../JMRouter;
