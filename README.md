@@ -35,7 +35,7 @@ JMRouter.routing(url: "scheme2://action/tel?phone=xxxxxx")
 routing完整定义如下
 
 ```
-	/// 通过url 来跳转对应页面, 或执行某个action
+    /// 通过url 来跳转对应页面, 或执行某个action
     ///
     /// - Parameters:
     ///   - url: url字符串
