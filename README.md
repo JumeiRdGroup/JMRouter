@@ -151,6 +151,21 @@ extension JMRouter {
 }
 ```
 
+对于一些UI层次结构比较特殊的项目，最后还有一个地方可能需要注意
+
+**JMRouterPage.swift**中**goto**函数里用来跳转的vc，优先使用传入的vc，否则使用app top
+
+```
+public static func goto(_ page: JMRouter.Page, url: String? = nil, parameters: [String : String]? = nil, object: Any? = nil, from vc: UIViewController? = nil, completion: JMRouterCompletionClosure? = nil) -> UIViewController? {
+     。。。   
+	/// 优先使用传入的vc，否则使用app top
+    guard let finalViewController = vc ?? UIViewController.appTopVC else {
+        return nil
+    }      
+    。。。
+}
+```
+
 ## License
 
 MIT License
