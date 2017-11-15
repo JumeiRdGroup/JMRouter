@@ -20,10 +20,14 @@ public extension JMRouter {
     /// 遍历所有的类，检测是否实现Routable，存入字典作为映射表，使用Router前必须先调用
     public static func registerPagePathMap() {
         var cout = UInt32(0)
-        let classes = objc_copyClassList(&cout)
+        guard let classes = objc_copyClassNamesForImage(class_getImageName(AppDelegate.self)!, &cout) else {
+            return
+        }
         for i in 0 ..< Int(cout) {
-            if let cls = classes?[i], let clss = cls as? Routable.Type {
-                pagePathMap.updateValue(String(describing: clss), forKey: clss.routePath)
+            if let clsName = String(cString: classes[i], encoding: .utf8)?.components(separatedBy: ".").last {
+                if let clss = clsName.toClass() as? Routable.Type {
+                    pagePathMap.updateValue(clsName, forKey: clss.routePath)
+                }
             }
         }
     }

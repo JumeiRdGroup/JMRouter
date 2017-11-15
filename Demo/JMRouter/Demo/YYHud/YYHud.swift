@@ -217,7 +217,7 @@ extension YYHud {
         }
     }
     
-    func dismiss() {
+    @objc func dismiss() {
         if !self.isShowing {
             return
         }

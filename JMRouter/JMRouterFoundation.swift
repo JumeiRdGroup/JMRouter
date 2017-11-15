@@ -56,7 +56,7 @@ extension String {
     public func toClass() -> AnyClass? {
         if  let appName: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String {
             
-            let classStringName = "_TtC\(appName.characters.count)\(appName)\(self.characters.count)\(self)"
+            let classStringName = "_TtC\(appName.count)\(appName)\(self.count)\(self)"
             let cls: AnyClass?  = NSClassFromString(classStringName)
             return cls
         }
