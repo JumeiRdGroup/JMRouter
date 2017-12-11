@@ -45,7 +45,15 @@ public extension JMRouter {
     
     /// 通过枚举来跳转对应页面
     @discardableResult
-    public static func goto(_ page: JMRouter.Page, url: String? = nil, parameters: [String : String]? = nil, object: Any? = nil, from vc: UIViewController? = nil, completion: JMRouterCompletionClosure? = nil) -> UIViewController? {
+    public static func goto(
+        _ page: JMRouter.Page,
+        url: String? = nil,
+        parameters: [String : String]? = nil,
+        object: Any? = nil,
+        from vc: UIViewController? = nil,
+        animation: JMRouter.Animation? = nil,
+        completion: JMRouterCompletionClosure? = nil
+        ) -> UIViewController? {
         
         /// 将completion回调的执行放到defer中
         var result: UIViewController? = nil
@@ -65,7 +73,7 @@ public extension JMRouter {
         
         /// 找到要跳转的vc
         guard let page = page.toRoutePage(),
-            let toVC = page.routePageCreate(url: url ?? page.routeUrl, parameters: parameters, object: object) else {
+            let toVC = page.routePageCreate(url: url, parameters: parameters, object: object) else {
                 return nil
         }
         
@@ -74,7 +82,8 @@ public extension JMRouter {
             return nil
         }
         
-        switch page.routeAnimation {
+        let routeAnimation = animation ?? page.routeAnimation
+        switch routeAnimation {
         case .push(let animated):
             guard let navigationVC = (finalViewController as? UINavigationController) ?? finalViewController.navigationController else {
                 completion?(false, nil)

@@ -13,25 +13,20 @@ public protocol Routable {
     /// 路由界面出现的动画方式，目前只有 push, present，默认为push(animated:true)
     static var routeAnimation: JMRouter.Animation { get }
     
-    /// 路由完整路径，默认为pageRoot + routePath
-    static var routeUrl: String { get }
-    
     /// 路由界面唯一标志
     static var routePath: JMRouter.Page { get }
     
     /// 路由界面如何生成
-    static func routePageCreate(url: String, parameters: [String : String]?, object: Any?) -> UIViewController?
+    static func routePageCreate(url: String?, parameters: [String : String]?, object: Any?) -> UIViewController?
 }
 
 /// 一些默认值
 public extension Routable {
-    static var routeUrl: String { return JMRouter.pageRoot + routePath.rawValue + "/"}
     static var routeAnimation: JMRouter.Animation { return .push(animated:true) }
 }
 
 
 // MARK: - Extensions
-
 extension String {
     public var isNotBlank: Bool {
         let trimmed = trimmingCharacters(in: .whitespacesAndNewlines)

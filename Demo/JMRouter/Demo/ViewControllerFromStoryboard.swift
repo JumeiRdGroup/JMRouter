@@ -43,7 +43,7 @@ extension ViewControllerFromStoryboard: Routable {
         return .vc1
     }
     
-    static func routePageCreate(url: String, parameters: [String : String]?, object: Any?) -> UIViewController? {
+    static func routePageCreate(url: String?, parameters: [String : String]?, object: Any?) -> UIViewController? {
         
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ViewControllerFromStoryboard")
         vc.title = parameters?["title"]

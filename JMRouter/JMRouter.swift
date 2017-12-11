@@ -70,7 +70,7 @@ public enum JMRouter {
                 return false
             }
             excuteCompletion = false
-            return goto(page, url: url, parameters: decodedQueryParameters, object: object, from: vc, completion: completion) != nil
+            return goto(page, url: url, parameters: decodedQueryParameters, object: object, from: vc, animation: nil, completion: completion) != nil
         }
         
         /// 执行action
