@@ -8,249 +8,141 @@
 
 import UIKit
 
-// MARK: - 显示配置
-
-public struct YYHudOpitions: OptionSet {
-    public var rawValue = 0  // 因为RawRepresentable的要求
-    
-    public init(rawValue: Int) {
-        self.rawValue = rawValue
-    }
-    
-    public static var dim = YYHudOpitions(rawValue: 1 << 0)//灰色模板
-    public static var modal = YYHudOpitions(rawValue: 1 << 1)//模态显示
-}
-
-// MARK: - 动画
-
-public enum YYHudAnimation {
-    case none
-    case fade
-    case zoom
-}
-
-
 // MARK: - Public
-
-extension YYHud {
-    
-    /// 显示加载框
-    ///
-    /// - Parameters:
-    ///   - text: 文案
-    ///   - options: 默认模态显示，设置nil为非模态
-    ///   - container: 显示到某个view上，为nil时会显示到最外层的window上
-    /// - Returns: hud对象
-    @discardableResult
-    public static func showLoading(_ text: String? = nil, options: YYHudOpitions = [], in container: UIView? = nil) -> YYHud {
-        return shared.showLoading(text, options: options, in: container)
-    }
-    
-    @discardableResult
-    public static func showSuccess(_ text: String? = nil, in container: UIView? = nil) -> YYHud {
-        return shared.showSuccess(text, in: container)
-    }
-    
-    @discardableResult
-    public static func showError(_ text: String? = nil, in container: UIView? = nil) -> YYHud {
-        return shared.showError(text, in: container)
-    }
-    
-    @discardableResult
-    public static func showInfo(_ text: String? = nil, in container: UIView? = nil) -> YYHud {
-        return shared.showInfo(text, in: container)
-    }
-    
-    @discardableResult
-    public static func showTip(_ text: String, in container: UIView? = nil) -> YYHud {
-        return shared.showTip(text, in: container)
-    }
-    
-    public static func dismiss() {
-        shared.dismiss()
-    }
-    
-    public static func config() {
-        
-    }
+public extension YYHud {
+	public static func dismiss(after: Double = 0) {
+		YYHud.shared.dismiss(after: after)
+	}
+	
+	@discardableResult
+	public static func showTip(_ text: String, duration: Double, in view: UIView? = nil) -> YYHud {
+		return showTip(text, options: [.duration(second: duration)], in: view)
+	}
+	
+	@discardableResult
+	public static func showTip(_ text: String, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
+		return show(.tip(text: text), options: options, in: view)
+	}
+	
+	@discardableResult
+	public static func showLoading(with text: String? = nil, options: OptionInfo = [], in view: UIView? = nil) -> YYHud {
+		return show(.loading(text: text), options: options, in: view)
+	}
+	
+	@discardableResult
+	public static func showSuccess(with text: String? = nil, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
+		return show(.image(image: YYHud.imageSucess, text: text), options: options, in: view)
+	}
+	
+	@discardableResult
+	public static func showError(with text: String? = nil, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
+		return show(.image(image: YYHud.imageError, text: text), options: options, in: view)
+	}
+	
+	@discardableResult
+	public static func showInfo(with text: String? = nil, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
+		return show(.image(image: YYHud.imageInfo, text: text), options: options, in: view)
+	}
+	
+	@discardableResult
+	public static func show(_ type: ShowType, options: OptionInfo = [], in view: UIView? = nil) -> YYHud {
+		return YYHud.shared.show(type, options: options, in: view)
+	}
 }
 
-public class YYHud: UIView {
-    // MARK: - Const
-    
-    let YYHudRadius = CGFloat(5)
-    let YYHudAnimationDuration = 0.3
-    
-    public static let YYHudDuration = 2.0
-    let YYHudDurationForever = -1.0
-    
-    let YYHudimageContainerHeight = CGFloat(50)
-    let YYHudimageContainerMarginTopDefault = CGFloat(15)
-    let YYHudimageContainerMarginTopWithText = CGFloat(10)
-    
-    // MARK: - Property
-    
-    @IBOutlet weak var hudContainer: UIView!
-    
-    @IBOutlet weak var imageContainer: UIView!
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var indicatorView: UIActivityIndicatorView!
-    
-    @IBOutlet weak var textLabel: UILabel!
-    
-    @IBOutlet weak var imageContainerMarginTop: NSLayoutConstraint!
-    @IBOutlet weak var imageContainerHeight: NSLayoutConstraint!
-    
-    // MARK: - 自定义配置，默认值取自xib中的设置
-    
-    var hudBackgroundColor: UIColor! { didSet { hudContainer.backgroundColor = hudBackgroundColor } }
-    var textColor: UIColor! { didSet { textLabel.textColor = textColor } }
-    var textFont: UIFont! { didSet { textLabel.font = textFont } }
-    
-    var options: YYHudOpitions = [] {
-        didSet {
-            self.backgroundColor = options.contains(.dim) ? UIColor(white: 0, alpha: 0.62) : UIColor.clear
-            self.ismodalAlert = options.contains(.modal)
-        }
-    }
-    
-    public static let shared = YYHud.newInstanceFromXib()
-    public static func newInstanceFromXib() -> YYHud {
-        let view = Bundle(for: self).loadNibNamed("YYHud", owner: nil, options: nil)!.first as? YYHud
-        return view!
-    }
-    
-    var ismodalAlert = true {
-        didSet {
-            self.isUserInteractionEnabled = ismodalAlert
-        }
-    }
-    var isShowing: Bool = false
-    var dismissTimer: Timer?
-    
-    // MARK: - Initialization
-    
-    public override func awakeFromNib() {
-        self.setContext()
-    }
-    
-    func setContext() {
-        hudBackgroundColor = hudContainer.backgroundColor
-        textColor = textLabel.textColor
-        textFont = textLabel.font
-        hudContainer.layer.cornerRadius = YYHudRadius
-    }
+public extension YYHud {
+	@discardableResult
+	public func show(_ type: ShowType, options: OptionInfo = [], in view: UIView? = nil) -> YYHud {
+		config(with: view)
+		config(with: type)
+		config(with: options)
+		
+		return self.showWithAnimation()
+	}
+	
+	public func dismiss(after: Double = 0) {
+		if after > 0 {
+			dismissTimer?.invalidate()
+			dismissTimer = Timer.scheduledTimer(timeInterval: after, target: self, selector: #selector(dismissWithAnimation), userInfo: nil, repeats: false)
+		} else {
+			dismissWithAnimation()
+		}
+	}
 }
 
-
-// MARK: - Show
-
-extension YYHud {
-    var imageSucess: UIImage? { return UIImage(named: "YYHudSucess") }
-    var imageError: UIImage? { return UIImage(named: "YYHudError") }
-    var imageInfo: UIImage? { return UIImage(named: "YYHudInfo") }
-    var superViewDefault: UIView { return UIApplication.shared.keyWindow! }
-    
-    func showLoading(_ text: String? = nil, options: YYHudOpitions = [], in container: UIView? = nil) -> YYHud {
-        return show(in: container, text: text, duration: YYHudDurationForever, options: options)
-    }
-    
-    func showSuccess(_ text: String? = nil, in container: UIView? = nil) -> YYHud {
-        return show(in: container, text: text, image: imageSucess)
-    }
-    
-    func showError(_ text: String? = nil, in container: UIView? = nil) -> YYHud {
-        return show(in: container, text: text, image: imageError)
-    }
-    
-    func showInfo(_ text: String? = nil, in container: UIView? = nil) -> YYHud {
-        return show(in: container, text: text, image: imageInfo)
-    }
-    
-    func showTip(_ text: String, in container: UIView? = nil) -> YYHud {
-        return show(in: container, text: text, isTip: true)
-    }
-    
-    func show(in view: UIView?, text: String?, image: UIImage? = nil, isTip: Bool = false, duration:Double = YYHud.YYHudDuration, animation: YYHudAnimation = .fade, options: YYHudOpitions = []) -> YYHud {
-        isShowing = true
-        DispatchQueue.main.async {
-            self.options = options
-            if self.superview != nil {
-                self.superview?.bringSubview(toFront: self)
-            } else {
-                let finalSuperView = view ?? self.superViewDefault
-                finalSuperView.addSubview(self)
-            }
-            
-            self.frame = self.superview!.bounds
-            self.textLabel.text = text
-            self.imageView.image = image
-            
-            //只显示提示文字
-            if isTip {
-                self.imageView.image = nil
-                self.indicatorView.stopAnimating()
-            } else {
-                //显示自定义图片，或者默认的转圈
-                image != nil ? self.indicatorView.stopAnimating() : self.indicatorView.startAnimating()
-                self.indicatorView.isHidden = image != nil
-                
-                //没有文字显示正中间
-                self.imageContainerMarginTop.constant = text != nil ? self.YYHudimageContainerMarginTopWithText : self.YYHudimageContainerMarginTopDefault
-            }
-            self.imageContainer.isHidden = isTip
-            self.imageContainerHeight.constant = isTip ? 0 : self.YYHudimageContainerHeight
-            
-            self.showAnimation(animation)
-        }
-        
-        refreshDismissTime(duration)
-        return self
-    }
-    
-    func showAnimation(_ type: YYHudAnimation) {
-        UIView.animate(withDuration: YYHudAnimationDuration, delay: 0, options: [.curveEaseIn], animations: {
-            self.hudContainer.transform = CGAffineTransform.identity
-            self.hudContainer.alpha = 1
-        }) { (_) in
-            
-        }
-    }
-    
-    @objc func dismiss() {
-        if !self.isShowing {
-            return
-        }
-        DispatchQueue.main.async {
-            UIView.animate(withDuration: self.YYHudAnimationDuration, delay: 0, options: [.curveEaseIn], animations: {
-                self.hudContainer.transform = CGAffineTransform.identity
-                self.hudContainer.alpha = 0
-            }) { (_) in
-                self.indicatorView.stopAnimating()
-                self.removeFromSuperview()
-            }
-        }
-    }
-    
-    func refreshDismissTime(_ duration: Double) {
-        if let timer = dismissTimer {
-            timer.invalidate()
-            dismissTimer = nil
-        }
-        
-        if (duration != YYHudDurationForever) {
-            dismissTimer = Timer.scheduledTimer(timeInterval: duration, target: self, selector: #selector(dismiss), userInfo: nil, repeats: false)
-        }
-    }
+public final class YYHud: UIView {
+	
+	public static let shared = YYHud()
+	
+	override init(frame: CGRect) {
+		super.init(frame: frame)
+		setupContext()
+	}
+	
+	required public init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
+	func setupContext() {
+		autoresizingMask = [.flexibleWidth, .flexibleHeight]
+	}
+	
+	private lazy var contentView: ContentView = {
+		let v = ContentView()
+		addSubview(v)
+		v.layoutCenterParent()
+		v.layoutWidth(max: width/4 * 3)
+		v.layoutHeight(max: height/4 * 3)
+		
+		return v
+	}()
+	
+	private var dismissTimer: Timer?
 }
 
+private extension YYHud {
+	var defaultWindow: UIWindow {
+		return UIApplication.shared.delegate!.window!!
+	}
+	
+	func config(with view: UIView?) {
+		let superView = view ?? defaultWindow
+		removeFromSuperview()
+		superView.addSubview(self)
+		frame = superView.bounds
+	}
+	
+	func config(with type: ShowType) {
+		contentView.config(with: type)
+	}
+	
+	func config(with options: OptionInfo) {
+		backgroundColor = options.isDim ? #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.5) : .clear
+		isUserInteractionEnabled = options.isModal ? true : false
+		dismissTimer?.invalidate()
+		if let duration = options.duration {
+			dismiss(after: duration)
+		}
+	}
+}
 
-
-
-
-
-
-
+private extension YYHud {
+	func showWithAnimation() -> Self {
+		contentView.alpha = 0
+		UIView.animate(withDuration: 0.35) {
+			self.contentView.alpha = 1
+		}
+		return self
+	}
+	
+	@objc func dismissWithAnimation() {
+		UIView.animate(withDuration: 0.35, animations: {
+			self.contentView.alpha = 0
+		}) { (_) in
+			self.removeFromSuperview()
+		}
+	}
+}
 
 
 

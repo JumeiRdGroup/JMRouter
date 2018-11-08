@@ -116,7 +116,7 @@ extension HomeController: UITableViewDelegate, UITableViewDataSource {
             return
         }
         /// 使用url跳转并传递一个额外参数 随机颜色
-        JMRouter.routing(url: dataArray[indexPath.row], object: UIColor.random) { resrult, _ in
+		JMRouter.routing(with: dataArray[indexPath.row].urlEncoded!, object: UIColor.random) { resrult, _ in
             YYHud.showTip(resrult ? "操作成功" : "操作失败")
         }
     }
@@ -124,7 +124,7 @@ extension HomeController: UITableViewDelegate, UITableViewDataSource {
 
 
 
-extension HomeController: Routable {
+extension HomeController: JMRoutable {
     static var routeAnimation: JMRouter.Animation {
         return .present(animated: true)
     }
@@ -133,11 +133,16 @@ extension HomeController: Routable {
         return .home
     }
     
-    static func routePageCreate(url: String?, parameters: [String : String]?, object: Any?) -> UIViewController? {
+	static func routePageCreate(with url: String?, parameters: [String : String]?, object: Any?) -> UIViewController? {
         return UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
     }
 }
 
+extension String {
+	public var urlEncoded: String? {
+		return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+	}
+}
 
 
 extension UIView {

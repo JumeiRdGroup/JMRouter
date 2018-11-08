@@ -34,12 +34,12 @@ class ViewControllerWithNib: UIViewController {
 
 }
 
-extension ViewControllerWithNib: Routable {
+extension ViewControllerWithNib: JMRoutable {
     static var routePath: JMRouter.Page {
         return .vc2
     }
     
-    static func routePageCreate(url: String?, parameters: [String : String]?, object: Any?) -> UIViewController? {
+	static func routePageCreate(with url: String?, parameters: [String : String]?, object: Any?) -> UIViewController? {
         
         let vc = ViewControllerWithNib()
         vc.title = parameters?["title"]

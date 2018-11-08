@@ -34,7 +34,7 @@ class ViewControllerFromStoryboard: UIViewController {
 
 }
 
-extension ViewControllerFromStoryboard: Routable {
+extension ViewControllerFromStoryboard: JMRoutable {
     static var routeAnimation: JMRouter.Animation {
         return .push(animated: false)
     }
@@ -43,7 +43,7 @@ extension ViewControllerFromStoryboard: Routable {
         return .vc1
     }
     
-    static func routePageCreate(url: String?, parameters: [String : String]?, object: Any?) -> UIViewController? {
+	static func routePageCreate(with url: String?, parameters: [String : String]?, object: Any?) -> UIViewController? {
         
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ViewControllerFromStoryboard")
         vc.title = parameters?["title"]
