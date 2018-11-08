@@ -35,7 +35,10 @@ final public class JMRouter {
 	///   - completion: routing完成后的回调（有动画会异步），Bool同return的返回值；注意：如果是push(animated: true)成功的，completion在0.35s后调用，这个是自定义的时间。
 	/// - Returns: 如果找到了对应的page并跳转成功，或执行了对应action，返回true
 	@discardableResult
-	public static func routing(with urlString: String, object: Any? = nil, from vc: UIViewController? = nil, completion: Completion? = nil) -> Bool {
+	public static func routing(with urlString: String,
+							   object: Any? = nil,
+							   from vc: UIViewController? = nil,
+							   completion: Completion? = nil) -> Bool {
 		/// 将completion回调的执行放到defer中
 		var result: Any? = nil
 		var excuteCompletion = true

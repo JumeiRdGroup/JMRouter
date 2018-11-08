@@ -35,16 +35,19 @@ JMRouter.routing(url: "scheme2://action/tel?phone=xxxxxx")
 routing完整定义如下
 
 ```
-    /// 通过url 来跳转对应页面, 或执行某个action
-    ///
-    /// - Parameters:
-    ///   - url: url字符串
-    ///   - object: 额外的参数
-    ///   - vc: 优先使用传入的controller来执行跳转或action，否则会自动寻找当前的controller
-    ///   - completion: routing完成后的回调（有动画会异步），Bool同return的返回值；注意：如果是push(animated: true)成功的，completion在0.35s后调用，这个是自定义的时间。
-    /// - Returns: 如果找到了对应的page并跳转成功，或执行了对应action，返回true
-    @discardableResult
-    public static func routing(url: String?, object: Any? = nil, from vc: UIViewController? = nil, completion: JMRouterCompletionClosure? = nil) -> Bool
+	/// 通过url 来跳转对应页面, 或执行某个action
+	///
+	/// - Parameters:
+	///   - urlString: url字符串
+	///   - object: 额外的参数
+	///   - vc: 优先使用传入的controller来执行跳转或action，否则会自动寻找当前的controller
+	///   - completion: routing完成后的回调（有动画会异步），Bool同return的返回值；注意：如果是push(animated: true)成功的，completion在0.35s后调用，这个是自定义的时间。
+	/// - Returns: 如果找到了对应的page并跳转成功，或执行了对应action，返回true
+	@discardableResult
+	public static func routing(with urlString: String,
+							   object: Any? = nil,
+							   from vc: UIViewController? = nil,
+							   completion: Completion? = nil) -> Bool
 ```
 
 另外如果是应用内使用，建议用枚举的模式，更方便
@@ -65,22 +68,19 @@ JMRouter.goto(.home, from: self) { resrult, homeVc in
    ```
    /// 路由协议 controller实现这个协议，表示支持路由跳转
    public protocol Routable {
-       /// 路由界面出现的动画方式，目前只有 push, present，默认为push(animated:true)
-       static var routeAnimation: JMRouter.Animation { get }
-       
-       /// 路由完整路径，默认为pageRoot + routePath
-       static var routeUrl: String { get }
-       
        /// 路由界面唯一标志
-       static var routePath: JMRouter.Page { get }
-       
-       /// 路由界面如何生成
-       static func routePageCreate(url: String, parameters: [String : String]?, object: Any?) -> UIViewController?
+   	static var routePath: JMRouter.Page { get }
+   	
+   	/// 路由界面出现的动画方式，目前只有 push, present，默认为push(animated:true)
+   	static var routeAnimation: JMRouter.Animation { get }
+   	
+   	/// 路由界面如何生成
+   	static func routePageCreate(with scheme: String?, parameters: [String: String]?, object: Any?) -> UIViewController?
    }
-
+   
    /// 一些默认值
    public extension Routable {
-       static var routeUrl: String { return JMRouter.pageRoot + routePath.rawValue + "/"}
+       //static var routeUrl: String { return JMRouter.pageRoot + routePath.rawValue + "/"}
        static var routeAnimation: JMRouter.Animation { return .push(animated:true) }
    }
    ```
@@ -123,14 +123,14 @@ demo中更为详细的例子，使用前可以先看看
 public static let schemes = ["scheme1", "scheme2", "scheme3"]
 ```
 
-**host分别定义在JMRouterPage.swift和JMRouterAction.swift文件中**
+**host分别定义在文件JMRouter+Page.swift和JMRouter+Action.swift的扩展中**
 
 ```
-public static let pageHost = "page"
-public static let actionHost = "action"
+private extension JMRouter.Page {}
+private extension JMRouter.Action {}
 ```
 
-**lastPathComponent也是分别定义在JMRouterPage.swift和JMRouterAction.swift文件中，使用了2个枚举类型**
+**lastPathComponent也是分别定义在JMRouter+Page.swift和JMRouter+Action.swift文件中，使用了2个枚举类型**
 
 ```
 // MARK: - 支持的pages
@@ -153,10 +153,15 @@ extension JMRouter {
 
 对于一些UI层次结构比较特殊的项目，最后还有一个地方可能需要注意
 
-**JMRouterPage.swift**中**goto**函数里用来跳转的vc，优先使用传入的vc，否则使用app top
+**JMRouter+Page.swift**中**goto**函数里用来跳转的vc，优先使用传入的vc，否则使用app top
 
 ```
-public static func goto(_ page: JMRouter.Page, url: String? = nil, parameters: [String : String]? = nil, object: Any? = nil, from vc: UIViewController? = nil, completion: JMRouterCompletionClosure? = nil) -> UIViewController? {
+public static func goto(_ page: JMRouter.Page,
+							url: String? = nil,
+							parameters: [String : String]? = nil,
+							object: Any? = nil,
+							from vc: UIViewController? = nil,
+							completion: Completion? = nil) -> UIViewController? {
      。。。   
 	/// 优先使用传入的vc，否则使用app top
     guard let finalViewController = vc ?? UIViewController.appTopVC else {
