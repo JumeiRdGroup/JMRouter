@@ -13,6 +13,8 @@
 
 - JMRouter使用了枚举方式，集中式管理了所有可路由的controller，当有新的路由时，需要添加一个case
 
+> 最新更新将JMPage协议化了，可以在自己工程中添加router管理，action再拆出来就可以作为通用组件了。。
+
 ## 使用
 
 JMRouter目前支持跳转某个controller，以及执行特定的action，如下
@@ -44,7 +46,8 @@ routing完整定义如下
 	///   - completion: routing完成后的回调（有动画会异步），Bool同return的返回值；注意：如果是push(animated: true)成功的，completion在0.35s后调用，这个是自定义的时间。
 	/// - Returns: 如果找到了对应的page并跳转成功，或执行了对应action，返回true
 	@discardableResult
-	public static func routing(with urlString: String,
+	public static func routing(
+								 with urlString: String,
 							   object: Any? = nil,
 							   from vc: UIViewController? = nil,
 							   completion: Completion? = nil) -> Bool
@@ -54,51 +57,52 @@ routing完整定义如下
 
 ```
 /// 应用内使用枚举方式跳转更方便
-JMRouter.goto(.home, from: self) { resrult, homeVc in
+JMRouter.goto(Page.home, from: self) { resrult, homeVc in
     YYHud.showTip(resrult ? "操作成功" : "操作失败")
 }
 ```
 
 当然，为了能简单使用，我们还会有些使用前准备工作😀
 
-1. 使用前需要调用一次`JMRouter.registerPagePathMap()`，建议放到didFinishLaunchingWithOptions中
+1. 使用前需要调用一次`static func setup(with appDelegate: UIApplicationDelegate, schemes: [String])`，建议放到didFinishLaunchingWithOptions中
 
 2. 想要一个controller支持路由跳转，需要实现Routable协议
 
    ```
-   /// 路由协议 controller实现这个协议，表示支持路由跳转
-   public protocol Routable {
-       /// 路由界面唯一标志
-   	static var routePath: JMRouter.Page { get }
+   // MARK: - 表示一个页面的协议，rawValue是为了enum的支持
+   public protocol JMPage {
+       var rawValue: String { get }
+   }
+   
+   // MARK: - 路由协议 controller实现这个协议，表示支持路由跳转
+   public protocol JMRoutable {
+   	/// 路由界面唯一标志
+   	static var routePath: JMPage { get }
    	
    	/// 路由界面出现的动画方式，目前只有 push, present，默认为push(animated:true)
    	static var routeAnimation: JMRouter.Animation { get }
    	
    	/// 路由界面如何生成
-   	static func routePageCreate(with scheme: String?, parameters: [String: String]?, object: Any?) -> UIViewController?
+   	static func routePageCreate(with scheme: String?, parameters: [String : String]?, object: Any?) -> UIViewController?
    }
    
    /// 一些默认值
-   public extension Routable {
-       //static var routeUrl: String { return JMRouter.pageRoot + routePath.rawValue + "/"}
-       static var routeAnimation: JMRouter.Animation { return .push(animated:true) }
+   public extension JMRoutable {
+   	static var routeAnimation: JMRouter.Animation { return .push(animated: true) }
    }
    ```
 
 3. 每添加一个controller需要在JMRouter.Page中添加一个case，表示该controller的唯一路径，Action同理
 
       ```
-      // MARK: - 支持的pages
-      extension JMRouter {
-          /// 声明支持的路由跳转有哪些，字符串
-          public enum Page: String {
-              case home
-              case vc1 //key和约定的字符串一致时
-              case vc2 = "nibVc" //key和约定的字符串不一致时
-          }
+      /// 声明哪些controller支持路由跳转
+      enum Page: String, JMPage {
+          case home
+          case vc1 //key和约定的字符串一致时
+          case vc2 = "nibVc" //key和约定的字符串不一致时
       }
       ```
-
+      
 4. 没有了，没有了，没有了😜
 
 
@@ -116,11 +120,11 @@ demo中更为详细的例子，使用前可以先看看
 
 这些配置在每个项目中可能都有自己的规则，所以可以根据需求自行调整😀
 
-**scheme定义在JMRouter.swift文件中**
+**scheme定义在JMRouter.swift文件中，通过setup参数初始化**
 
 ```
 /// 支持的schemes
-public static let schemes = ["scheme1", "scheme2", "scheme3"]
+public static private(set) var schemes = [""]
 ```
 
 **host分别定义在文件JMRouter+Page.swift和JMRouter+Action.swift的扩展中**
@@ -130,17 +134,14 @@ private extension JMRouter.Page {}
 private extension JMRouter.Action {}
 ```
 
-**lastPathComponent也是分别定义在JMRouter+Page.swift和JMRouter+Action.swift文件中，使用了2个枚举类型**
+**lastPathComponent的Page部分自己定义，Action部分在JMRouter+Action.swift文件中，都是用枚举**
 
 ```
-// MARK: - 支持的pages
-extension JMRouter {
-    /// 声明哪些controller支持路由跳转
-    public enum Page: String {
-        case home
-        case vc1 //key和约定的字符串一致时
-        case vc2 = "nibVc" //key和约定的字符串不一致时
-    }
+/// 声明哪些controller支持路由跳转
+enum Page: String, JMPage {
+    case home
+    case vc1 //key和约定的字符串一致时
+    case vc2 = "nibVc" //key和约定的字符串不一致时
 }
 
 // MARK: - 支持的action
@@ -156,7 +157,8 @@ extension JMRouter {
 **JMRouter+Page.swift**中**goto**函数里用来跳转的vc，优先使用传入的vc，否则使用app top
 
 ```
-public static func goto(_ page: JMRouter.Page,
+public static func goto(
+							_ page: JMPage,
 							url: String? = nil,
 							parameters: [String : String]? = nil,
 							object: Any? = nil,
