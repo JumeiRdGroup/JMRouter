@@ -16,16 +16,21 @@ public extension JMRouter {
 	}
 }
 
+// MARK: - 表示一个页面的协议，rawValue是为了enum的支持
+public protocol JMPage {
+    var rawValue: String { get }
+}
+
 // MARK: - 路由协议 controller实现这个协议，表示支持路由跳转
 public protocol JMRoutable {
 	/// 路由界面唯一标志
-	static var routePath: JMRouter.Page { get }
+	static var routePath: JMPage { get }
 	
 	/// 路由界面出现的动画方式，目前只有 push, present，默认为push(animated:true)
 	static var routeAnimation: JMRouter.Animation { get }
 	
 	/// 路由界面如何生成
-	static func routePageCreate(with scheme: String?, parameters: [String: String]?, object: Any?) -> UIViewController?
+	static func routePageCreate(with scheme: String?, parameters: [String : String]?, object: Any?) -> UIViewController?
 }
 
 public extension JMRoutable {

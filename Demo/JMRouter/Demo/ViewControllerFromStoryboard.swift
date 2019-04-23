@@ -39,8 +39,8 @@ extension ViewControllerFromStoryboard: JMRoutable {
         return .push(animated: false)
     }
     
-    static var routePath: JMRouter.Page {
-        return .vc1
+    static var routePath: JMPage {
+        return Page.vc1
     }
     
 	static func routePageCreate(with url: String?, parameters: [String : String]?, object: Any?) -> UIViewController? {

@@ -110,7 +110,7 @@ extension HomeController: UITableViewDelegate, UITableViewDataSource {
         
         if indexPath.row == 0 {
             /// 应用内使用枚举方式跳转更方便
-            JMRouter.goto(.home, from: self) { resrult, homeVc in
+            JMRouter.goto(Page.home, from: self) { resrult, homeVc in
                 YYHud.showTip(resrult ? "操作成功" : "操作失败")
             }
             return
@@ -129,8 +129,8 @@ extension HomeController: JMRoutable {
         return .present(animated: true)
     }
     
-    static var routePath: JMRouter.Page {
-        return .home
+    static var routePath: JMPage {
+        return Page.home
     }
     
 	static func routePageCreate(with url: String?, parameters: [String : String]?, object: Any?) -> UIViewController? {

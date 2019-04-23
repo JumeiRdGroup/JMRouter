@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        JMRouter.registerPagePathMap()
+        JMRouter.setup(with: self, schemes: ["scheme1", "scheme2", "scheme3"])
         return true
     }
 
@@ -45,3 +45,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+/// 声明哪些controller支持路由跳转
+enum Page: String, JMPage {
+    case home
+    case vc1 //key和约定的字符串一致时
+    case vc2 = "nibVc" //key和约定的字符串不一致时
+}
