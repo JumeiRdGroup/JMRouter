@@ -10,7 +10,7 @@ import UIKit
 
 // MARK: - 支持的action
 public extension JMRouter {
-	public enum Action: String {
+	enum Action: String {
 		case tel
 	}
 }
@@ -22,7 +22,7 @@ private extension JMRouter.Action {
 /// MARK: - Action
 public extension JMRouter {
 	/// 检查urlString是否是合法action schema
-	public static func validateActionUrl(_ urlString: String) -> Bool {
+    static func validateActionUrl(_ urlString: String) -> Bool {
 		guard let url = urlString.toURL(),
 			let scheme = url.scheme,
 			schemes.contains(scheme),
@@ -34,7 +34,7 @@ public extension JMRouter {
 	
 	/// 通过枚举来执行action
 	@discardableResult
-	public static func run(_ action: JMRouter.Action, url: String? = nil, parameters: [String : String]? = nil, object: Any? = nil, from vc: UIViewController? = nil, completion: Completion? = nil) -> Bool {
+    static func run(_ action: JMRouter.Action, url: String? = nil, parameters: [String : String]? = nil, object: Any? = nil, from vc: UIViewController? = nil, completion: Completion? = nil) -> Bool {
 		/// 将completion回调的执行放到defer中
 		var result: Any? = nil
 		defer {

@@ -50,7 +50,7 @@ public extension JMRouter {
 		}
 	}
 	
-	public static func validatePageUrl(_ urlString: String) -> Bool {
+    static func validatePageUrl(_ urlString: String) -> Bool {
 		guard let url = urlString.toURL(),
 			let scheme = url.scheme,
 			schemes.contains(scheme),
@@ -62,7 +62,7 @@ public extension JMRouter {
 	
 	/// 通过枚举来跳转对应页面
 	@discardableResult
-	public static func goto(_ page: JMRouter.Page,
+    static func goto(_ page: JMRouter.Page,
 							url: String? = nil,
 							parameters: [String : String]? = nil,
 							object: Any? = nil,

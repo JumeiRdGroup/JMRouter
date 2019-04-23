@@ -10,49 +10,49 @@ import UIKit
 
 // MARK: - Public
 public extension YYHud {
-	public static func dismiss(after: Double = 0) {
+	static func dismiss(after: Double = 0) {
 		YYHud.shared.dismiss(after: after)
 	}
 	
 	@discardableResult
-	public static func showTip(_ text: String, duration: Double, in view: UIView? = nil) -> YYHud {
+	static func showTip(_ text: String, duration: Double, in view: UIView? = nil) -> YYHud {
 		return showTip(text, options: [.duration(second: duration)], in: view)
 	}
 	
 	@discardableResult
-	public static func showTip(_ text: String, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
+	static func showTip(_ text: String, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
 		return show(.tip(text: text), options: options, in: view)
 	}
 	
 	@discardableResult
-	public static func showLoading(with text: String? = nil, options: OptionInfo = [], in view: UIView? = nil) -> YYHud {
+	static func showLoading(with text: String? = nil, options: OptionInfo = [], in view: UIView? = nil) -> YYHud {
 		return show(.loading(text: text), options: options, in: view)
 	}
 	
 	@discardableResult
-	public static func showSuccess(with text: String? = nil, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
+	static func showSuccess(with text: String? = nil, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
 		return show(.image(image: YYHud.imageSucess, text: text), options: options, in: view)
 	}
 	
 	@discardableResult
-	public static func showError(with text: String? = nil, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
+	static func showError(with text: String? = nil, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
 		return show(.image(image: YYHud.imageError, text: text), options: options, in: view)
 	}
 	
 	@discardableResult
-	public static func showInfo(with text: String? = nil, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
+	static func showInfo(with text: String? = nil, options: OptionInfo = [.duration(second: 2)], in view: UIView? = nil) -> YYHud {
 		return show(.image(image: YYHud.imageInfo, text: text), options: options, in: view)
 	}
 	
 	@discardableResult
-	public static func show(_ type: ShowType, options: OptionInfo = [], in view: UIView? = nil) -> YYHud {
+	static func show(_ type: ShowType, options: OptionInfo = [], in view: UIView? = nil) -> YYHud {
 		return YYHud.shared.show(type, options: options, in: view)
 	}
 }
 
 public extension YYHud {
 	@discardableResult
-	public func show(_ type: ShowType, options: OptionInfo = [], in view: UIView? = nil) -> YYHud {
+    func show(_ type: ShowType, options: OptionInfo = [], in view: UIView? = nil) -> YYHud {
 		config(with: view)
 		config(with: type)
 		config(with: options)
@@ -60,7 +60,7 @@ public extension YYHud {
 		return self.showWithAnimation()
 	}
 	
-	public func dismiss(after: Double = 0) {
+    func dismiss(after: Double = 0) {
 		if after > 0 {
 			dismissTimer?.invalidate()
 			dismissTimer = Timer.scheduledTimer(timeInterval: after, target: self, selector: #selector(dismissWithAnimation), userInfo: nil, repeats: false)
@@ -72,7 +72,7 @@ public extension YYHud {
 
 public final class YYHud: UIView {
 	
-	public static let shared = YYHud()
+	static let shared = YYHud()
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)

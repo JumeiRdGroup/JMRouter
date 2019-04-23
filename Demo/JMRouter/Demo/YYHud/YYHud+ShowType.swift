@@ -14,14 +14,14 @@ public extension YYHud {
 	static var imageInfo: UIImage { return UIImage(named: "YYHudInfo")! }
 	
 	///
-	public enum ShowType {
+    enum ShowType {
 		case tip(text: String)
 		case loading(text: String?)
 		case image(image: UIImage, text: String?)
 	}
 	
 	///
-	public class ContentView: UIView {
+    class ContentView: UIView {
 		///
 		lazy var textLabel: UILabel = {
 			UILabel().then {

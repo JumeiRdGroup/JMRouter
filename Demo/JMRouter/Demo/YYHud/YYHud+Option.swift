@@ -10,8 +10,8 @@ import UIKit
 
 public extension YYHud {
 	///
-	public typealias OptionInfo = [Option]
-	public enum Option {
+	typealias OptionInfo = [Option]
+	enum Option {
 		case dim						///黑色蒙层
 		case modal						///模态显示，禁止交互
 		case duration(second: Double)	///持续时间

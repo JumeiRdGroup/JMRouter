@@ -9,7 +9,7 @@
 import UIKit
 
 public extension UIView {
-	public func removeSubviews() {
+    func removeSubviews() {
 		subviews.forEach { $0.removeFromSuperview() }
 	}
 }
@@ -179,7 +179,7 @@ public extension UIView {
 // MARK: - Frame Sugar
 public extension UIView {
 	///
-	public var x: CGFloat {
+	var x: CGFloat {
 		get {
 			return frame.origin.x
 		} set(value) {
@@ -188,7 +188,7 @@ public extension UIView {
 	}
 	
 	///
-	public var y: CGFloat {
+	var y: CGFloat {
 		get {
 			return frame.origin.y
 		} set(value) {
@@ -197,7 +197,7 @@ public extension UIView {
 	}
 	
 	///
-	public var w: CGFloat {
+	var w: CGFloat {
 		get {
 			return frame.size.width
 		} set(value) {
@@ -206,7 +206,7 @@ public extension UIView {
 	}
 	
 	///
-	public var h: CGFloat {
+	var h: CGFloat {
 		get {
 			return frame.size.height
 		} set(value) {
@@ -215,7 +215,7 @@ public extension UIView {
 	}
 	
 	///
-	public var width: CGFloat {
+	var width: CGFloat {
 		get {
 			return frame.size.width
 		} set(value) {
@@ -224,7 +224,7 @@ public extension UIView {
 	}
 	
 	///
-	public var height: CGFloat {
+	var height: CGFloat {
 		get {
 			return frame.size.height
 		} set(value) {
@@ -233,7 +233,7 @@ public extension UIView {
 	}
 	
 	///
-	public var left: CGFloat {
+	var left: CGFloat {
 		get {
 			return x
 		} set(value) {
@@ -242,7 +242,7 @@ public extension UIView {
 	}
 	
 	///
-	public var right: CGFloat {
+	var right: CGFloat {
 		get {
 			return x + w
 		} set(value) {
@@ -251,7 +251,7 @@ public extension UIView {
 	}
 	
 	///
-	public var top: CGFloat {
+	var top: CGFloat {
 		get {
 			return y
 		} set(value) {
@@ -260,7 +260,7 @@ public extension UIView {
 	}
 	
 	///
-	public var bottom: CGFloat {
+	var bottom: CGFloat {
 		get {
 			return y + h
 		} set(value) {
@@ -269,7 +269,7 @@ public extension UIView {
 	}
 	
 	///
-	public var origin: CGPoint {
+	var origin: CGPoint {
 		get {
 			return frame.origin
 		} set(value) {
@@ -278,7 +278,7 @@ public extension UIView {
 	}
 	
 	///
-	public var centerX: CGFloat {
+	var centerX: CGFloat {
 		get {
 			return center.x
 		} set(value) {
@@ -287,7 +287,7 @@ public extension UIView {
 	}
 	
 	///
-	public var centerY: CGFloat {
+	var centerY: CGFloat {
 		get {
 			return center.y
 		} set(value) {
@@ -296,7 +296,7 @@ public extension UIView {
 	}
 	
 	///
-	public var size: CGSize {
+	var size: CGSize {
 		get {
 			return frame.size
 		} set(value) {
@@ -308,7 +308,7 @@ public extension UIView {
 // MARK: - IBInspectable
 public extension UIView {
 	/// Border color of view; also inspectable from Storyboard.
-	@IBInspectable public var borderColor: UIColor? {
+	@IBInspectable var borderColor: UIColor? {
 		get {
 			return layer.borderColor.flatMap { UIColor(cgColor: $0) }
 		}
@@ -318,7 +318,7 @@ public extension UIView {
 	}
 	
 	/// Border width of view; also inspectable from Storyboard.
-	@IBInspectable public var borderWidth: CGFloat {
+	@IBInspectable var borderWidth: CGFloat {
 		get {
 			return layer.borderWidth
 		}
@@ -328,7 +328,7 @@ public extension UIView {
 	}
 	
 	/// Corner radius of view; also inspectable from Storyboard.
-	@IBInspectable public var cornerRadius: CGFloat {
+	@IBInspectable var cornerRadius: CGFloat {
 		get {
 			return layer.cornerRadius
 		}
@@ -339,7 +339,7 @@ public extension UIView {
 	}
 	
 	/// Shadow color of view; also inspectable from Storyboard.
-	@IBInspectable public var shadowColor: UIColor? {
+	@IBInspectable var shadowColor: UIColor? {
 		get {
 			guard let color = layer.shadowColor else { return nil }
 			return UIColor(cgColor: color)
@@ -350,7 +350,7 @@ public extension UIView {
 	}
 	
 	/// Shadow offset of view; also inspectable from Storyboard.
-	@IBInspectable public var shadowOffset: CGSize {
+	@IBInspectable var shadowOffset: CGSize {
 		get {
 			return layer.shadowOffset
 		}
@@ -360,7 +360,7 @@ public extension UIView {
 	}
 	
 	/// Shadow opacity of view; also inspectable from Storyboard.
-	@IBInspectable public var shadowOpacity: Float {
+	@IBInspectable var shadowOpacity: Float {
 		get {
 			return layer.shadowOpacity
 		}
@@ -370,7 +370,7 @@ public extension UIView {
 	}
 	
 	/// Shadow radius of view; also inspectable from Storyboard.
-	@IBInspectable public var shadowRadius: CGFloat {
+	@IBInspectable var shadowRadius: CGFloat {
 		get {
 			return layer.shadowRadius
 		}

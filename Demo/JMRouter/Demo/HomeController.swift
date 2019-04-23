@@ -172,8 +172,7 @@ extension UIColor {
 
 extension CGFloat {
     public static func random() -> CGFloat {
-        return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
+        return CGFloat.random(in: 0.0..<1.0)
     }
-
 }
 
