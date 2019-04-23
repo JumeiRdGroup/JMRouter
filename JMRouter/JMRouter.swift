@@ -18,7 +18,10 @@ import UIKit
 
 public extension JMRouter {
     /// 遍历所有的类，检测是否实现Routable，存入字典作为映射表，使用Router前必须先调用
-    static func setup(with appDelegate: UIApplicationDelegate, schemes: [String]) {
+    static func setup(with appDelegate: UIApplicationDelegate,
+                      schemes: [String],
+                      pageHost: String = "page") {
+        JMRouter.pageHost = pageHost
         JMRouter.schemes = schemes
         JMRouter.registerPathMap(with: appDelegate)
     }
