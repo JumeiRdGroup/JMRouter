@@ -30,6 +30,8 @@ final public class JMRouter {
 	
     /// 支持的schemes
     public static private(set) var schemes = [""]
+    
+    public static private(set) var pageHost = "page"
 	
     /// 检查urlString是否是合法scheme
     public static func validateUrl(_ urlString: String) -> Bool {
@@ -68,8 +70,7 @@ final public class JMRouter {
         /// 跳转页面
         if validatePageUrl(urlString) {
             excuteCompletion = false
-            let page = Page(mappingWord)
-            return goto(page, url: urlString, parameters: queryParameters, object: object, from: vc, completion: completion) != nil
+            return goto(mappingWord, url: urlString, parameters: queryParameters, object: object, from: vc, completion: completion) != nil
         }
         
         /// 执行action

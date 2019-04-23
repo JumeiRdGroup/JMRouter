@@ -9,14 +9,9 @@
 import UIKit
 
 // MARK: - JMPage的实现
-public extension JMRouter {
-    struct Page: JMPage {
-        static let host = "page"
-        
-        public let rawValue: String
-        public init(_ name: String) {
-            self.rawValue = name
-        }
+extension String: JMPage {
+    public var rawValue: String {
+        return self
     }
 }
 
@@ -57,7 +52,7 @@ public extension JMRouter {
         guard let url = urlString.toURL(),
             let scheme = url.scheme,
             schemes.contains(scheme),
-            url.host == Page.host else {
+            url.host == JMRouter.pageHost else {
                 return false
         }
         return true

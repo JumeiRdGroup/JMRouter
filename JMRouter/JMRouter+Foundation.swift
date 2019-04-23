@@ -33,10 +33,10 @@ public protocol JMRoutable {
 	static func routePageCreate(with scheme: String?, parameters: [String : String]?, object: Any?) -> UIViewController?
 }
 
+// MARK: - 一些默认值
 public extension JMRoutable {
 	static var routeAnimation: JMRouter.Animation { return .push(animated: true) }
 }
-
 
 // MARK: - Extensions
 extension String {
