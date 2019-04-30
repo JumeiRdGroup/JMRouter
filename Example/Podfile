@@ -2,5 +2,6 @@ platform :ios, '8.0'
 use_frameworks!
 
 target 'JMRouter_Example' do
-  pod 'JMRouter', :path => '../'
+    pod 'JMRouter', :path => '../'
+#   pod 'JMRouter'
 end
