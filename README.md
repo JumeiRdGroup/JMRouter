@@ -1,56 +1,49 @@
 # JMRouter
+
 一个轻量级，纯Swift，协议化的路由控件
+
+## 要求
+
+- iOS 8.0+ 
+- Swift 5.0+
 
 ## 安装
 
-只支持手动安装，也就是直接将源码目录放入工程😅，原因如下：
-
-- 源码简单，加上注释300行左右
-
-
-- 不同项目都会修改固定的代码来定制自己的路由格式
-
-
-- JMRouter使用了枚举方式，集中式管理了所有可路由的controller，当有新的路由时，需要添加一个case
-
-> 最新更新将JMPage协议化了，可以在自己工程中添加router管理，action再拆出来就可以作为通用组件了。。
+```
+pod 'JMRouter'
+```
 
 ## 使用
 
-JMRouter目前支持跳转某个controller，以及执行特定的action，如下
+JMRouter目前支持跳转某个controller 如下
 
 ```
 /// 1. 跳转界面可以用类似下面格式url
 /// scheme1://page/map?title="地图"
-
-/// 2. 执行action可以用类似下面格式url，这里表示打电话
-/// scheme2://action/tel?phone=xxxxxx
 ```
 
 使用时只需执行对应的一行代码即可
 
 ```
-JMRouter.routing(url: "scheme1://page/map?title="地图")
-JMRouter.routing(url: "scheme2://action/tel?phone=xxxxxx")
+JMRouter.routing(with: "scheme1://page/map?title="地图")
 ```
 
 routing完整定义如下
 
 ```
-	/// 通过url 来跳转对应页面, 或执行某个action
-	///
-	/// - Parameters:
-	///   - urlString: url字符串
-	///   - object: 额外的参数
-	///   - vc: 优先使用传入的controller来执行跳转或action，否则会自动寻找当前的controller
-	///   - completion: routing完成后的回调（有动画会异步），Bool同return的返回值；注意：如果是push(animated: true)成功的，completion在0.35s后调用，这个是自定义的时间。
-	/// - Returns: 如果找到了对应的page并跳转成功，或执行了对应action，返回true
-	@discardableResult
-	public static func routing(
-								 with urlString: String,
-							   object: Any? = nil,
-							   from vc: UIViewController? = nil,
-							   completion: Completion? = nil) -> Bool
+/// 通过url 来跳转对应页面, 或执行某个action
+///
+/// - Parameters:
+///   - urlString: url字符串
+///   - object: 额外的参数
+///   - vc: 优先使用传入的controller来执行跳转或action，否则会自动寻找当前的controller
+///   - completion: routing完成后的回调（有动画会异步），Bool同return的返回值
+/// - Returns: 如果找到了对应的page并跳转成功，或执行了对应action，返回true
+@discardableResult
+public static func routing(with urlString: String,
+                          object: Any? = nil,
+                          from vc: UIViewController? = nil,
+                          completion: Completion? = nil) -> Bool
 ```
 
 另外如果是应用内使用，建议用枚举的模式，更方便
@@ -58,142 +51,134 @@ routing完整定义如下
 ```
 /// 应用内使用枚举方式跳转更方便
 JMRouter.goto(Page.home, from: self) { resrult, homeVc in
-    YYHud.showTip(resrult ? "操作成功" : "操作失败")
+  YYHud.showTip(resrult ? "操作成功" : "操作失败")
 }
 ```
 
 当然，为了能简单使用，我们还会有些使用前准备工作😀
 
-1. 使用前需要调用一次`static func setup(with appDelegate: UIApplicationDelegate, schemes: [String])`，建议放到didFinishLaunchingWithOptions中
-
-2. 想要一个controller支持路由跳转，需要实现Routable协议
-
-   ```
-   // MARK: - 表示一个页面的协议，rawValue是为了enum的支持
-   public protocol JMPage {
-       var rawValue: String { get }
-   }
-   
-   // MARK: - 路由协议 controller实现这个协议，表示支持路由跳转
-   public protocol JMRoutable {
-   	/// 路由界面唯一标志
-   	static var routePath: JMPage { get }
-   	
-   	/// 路由界面出现的动画方式，目前只有 push, present，默认为push(animated:true)
-   	static var routeAnimation: JMRouter.Animation { get }
-   	
-   	/// 路由界面如何生成
-   	static func routePageCreate(with scheme: String?, parameters: [String : String]?, object: Any?) -> UIViewController?
-   }
-   
-   /// 一些默认值
-   public extension JMRoutable {
-   	static var routeAnimation: JMRouter.Animation { return .push(animated: true) }
-   }
-   ```
-
-3. 每添加一个controller需要在JMRouter.Page中添加一个case，表示该controller的唯一路径，Action同理
-
-      ```
-      /// 声明哪些controller支持路由跳转
-      enum Page: String, JMPage {
-          case home
-          case vc1 //key和约定的字符串一致时
-          case vc2 = "nibVc" //key和约定的字符串不一致时
-      }
-      ```
-      
-4. 没有了，没有了，没有了😜
-
-
-
-demo中更为详细的例子，使用前可以先看看
-
-
-## 更详细的定制
-
-目前的我们使用设计规则是分别取url的
-
-- scheme：表示支持的协议，可以配置多个
-- host：表示执行操作的类型，跳转界面或执行action
-- lastPathComponent：表示执行的具体操作，比如跳转到地图页，打电话等。。
-
-这些配置在每个项目中可能都有自己的规则，所以可以根据需求自行调整😀
-
-**scheme定义在JMRouter.swift文件中，通过setup参数初始化**
+1. 使用前需要调用一次 
 
 ```
-/// 支持的schemes
-public static private(set) var schemes = [""]
+static func setup(with appDelegate: UIApplicationDelegate,
+                  schemes: [String],
+                  pageHost: String = "page")
 ```
 
-**host分别定义在文件JMRouter+Page.swift和JMRouter+Action.swift的扩展中**
+2. 想要一个controller支持路由跳转，需要实现JMRoutable协议，比如
 
 ```
-private extension JMRouter.Page {}
-private extension JMRouter.Action {}
-```
-
-**lastPathComponent的Page部分自己定义，Action部分在JMRouter+Action.swift文件中，都是用枚举**
-
-```
-/// 声明哪些controller支持路由跳转
-enum Page: String, JMPage {
-    case home
-    case vc1 //key和约定的字符串一致时
-    case vc2 = "nibVc" //key和约定的字符串不一致时
-}
-
-// MARK: - 支持的action
-extension JMRouter {
-    public enum Action: String {
-        case tel
+extension ViewControllerWithNib: JMRoutable {
+    static var routePage: JMRoutePage {
+        return Page.vc2
+    }
+    
+	static func routePageCreated(with url: String?,
+                                 parameters: [String : String]?, object: Any?)
+        -> UIViewController? {
+        let vc = ViewControllerWithNib()
+        vc.title = parameters?["title"]
+        vc.view.backgroundColor = object as? UIColor
+        return vc
     }
 }
 ```
 
-对于一些UI层次结构比较特殊的项目，最后还有一个地方可能需要注意
+3. 自定义一个enum，实现JMRoutePage协议，每个case，表示该controller的唯一路径
+
+```
+/// 声明哪些controller支持路由跳转
+enum Page: String, JMRoutePage {
+    case home
+    case vc1 //key和约定的字符串一致时
+    case vc2 = "nibVc" //key和约定的字符串不一致时
+}
+```
+
+4. 没有了，没有了，没有了😜
+
+demo中更为详细的例子，使用前可以先看看
+
+## 更详细的说明
+
+### 设计思路
+
+分别取url的
+
+- scheme：表示支持的协议，可以配置多个
+- host：表示执行操作的类型，默认是page，之前还支持action，不过发现不好单独提取出来，可能需要自己支持吧
+- lastPathComponent：表示执行的具体操作，比如跳转到地图页
+
+这些配置在每个项目中可能都有自己的规则，所以可以根据需求自行调整😀
+
+**scheme和host定义在JMRouter.swift文件中，通过setup参数初始化**
+
+```
+/// 支持的schemes
+public static private(set) var schemes = [""]
+public static private(set) var pageHost = "page"
+```
+
+**lastPathComponent的Page部分在自己工程中定义，使用枚举**
+
+```
+/// 声明哪些controller支持路由跳转
+enum Page: String, JMRoutePage {
+    case home
+    case vc1 //key和约定的字符串一致时
+    case vc2 = "nibVc" //key和约定的字符串不一致时
+}
+```
+
+### 对于一些UI层次结构比较特殊的项目
+
+还有一个地方可能需要注意
 
 **JMRouter+Page.swift**中**goto**函数里用来跳转的vc，优先使用传入的vc，否则使用app top
 
 ```
-public static func goto(
-							_ page: JMPage,
-							url: String? = nil,
-							parameters: [String : String]? = nil,
-							object: Any? = nil,
-							from vc: UIViewController? = nil,
-							completion: Completion? = nil) -> UIViewController? {
-     。。。   
-	/// 优先使用传入的vc，否则使用app top
+/// 通过枚举来跳转对应页面
+@discardableResult
+static func goto(_ page: JMRoutePage,
+                 url: String? = nil,
+                 parameters: [String : String]? = nil,
+                 object: Any? = nil,
+                 from vc: UIViewController? = nil,
+                 completion: Completion? = nil) -> UIViewController? {
+    。。。   
+    /// 优先使用传入的vc，否则使用app top
     guard let finalViewController = vc ?? UIViewController.appTopVC else {
         return nil
     }      
     。。。
 }
+
+```
+
+### 路由映射
+
+JMRouter.setup方法内部会调用registerPathMap，遍历主工程中所有类，判断是否实现JMRoutable协议来自动注册映射关系，可能会有点耗时。根据我们自己项目测试来看，大概几W个类，1秒内完成，所有看情况这步可以优化。。
+
+```
+/// 遍历所有的类，检测是否实现Routable，存入字典作为映射表，使用Router前必须先调用
+static func registerPathMap(with appDelegate: UIApplicationDelegate) {
+    var count: UInt32 = 0
+    guard let image = class_getImageName(object_getClass(appDelegate)),
+        let classes = objc_copyClassNamesForImage(image, &count) else {
+            print("JMRouter registerPathMap failed!!!!!!!!!!!!!!!!!!")
+            return
+    }
+
+    for i in 0 ..< Int(count) {
+        if let clsName = String(cString: classes[i], encoding: .utf8)?.components(separatedBy: ".").last {
+            if let cls = clsName.toClass() as? JMRoutable.Type {
+                pagePathMap.updateValue(clsName, forKey: cls.routePage.rawValue)
+            }
+        }
+    }
+}
 ```
 
 ## License
 
-MIT License
-
-Copyright (c) 2017 聚美优品
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
+JMRouter is available under the MIT license. See the LICENSE file for more info.
