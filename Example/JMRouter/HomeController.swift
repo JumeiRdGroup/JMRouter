@@ -16,11 +16,11 @@ extension HomeController {
         setupContext()
     }
 }
+
 /*
  
  */
 class HomeController: UIViewController {
-    
     // MARK: - Const
     
     let cellHeight = CGFloat(49)
@@ -49,7 +49,7 @@ class HomeController: UIViewController {
         
         edgesForExtendedLayout = []
         automaticallyAdjustsScrollViewInsets = false
-
+        
         view.addSubview(tableView)
         tableView.addConstraintFillSuperView()
     }
@@ -69,7 +69,7 @@ class HomeController: UIViewController {
     func renderUI() {
         tableView.reloadData()
     }
-
+    
     // MARK: - Private
     
     fileprivate var dataArray: [String] = []
@@ -78,7 +78,6 @@ class HomeController: UIViewController {
 // MARK: - Delegate
 
 extension HomeController: UITableViewDelegate, UITableViewDataSource {
-    
     // MARK: UITableViewDataSource
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -109,19 +108,18 @@ extension HomeController: UITableViewDelegate, UITableViewDataSource {
         
         if indexPath.row == 0 {
             /// 应用内使用枚举方式跳转更方便
-            JMRouter.goto(Page.home, from: self) { resrult, homeVc in
+            JMRouter.goto(Page.home, from: self) { resrult, _ in
                 YYHud.showTip(resrult ? "操作成功" : "操作失败")
             }
             return
         }
         /// 使用url跳转并传递一个额外参数 随机颜色
-		JMRouter.routing(with: dataArray[indexPath.row].urlEncoded!, object: UIColor.random) { resrult, _ in
+        JMRouter.routing(with: dataArray[indexPath.row].urlEncoded!,
+                         object: UIColor.random) { resrult, _ in
             YYHud.showTip(resrult ? "操作成功" : "操作失败")
         }
     }
 }
-
-
 
 extension HomeController: JMRoutable {
     static var routeAnimation: JMRouter.Animation {
@@ -129,26 +127,28 @@ extension HomeController: JMRoutable {
     }
     
     static var routePage: JMRoutePage {
-        return Page.home
+        Page.home
     }
     
-	static func routePageCreated(with url: String?, parameters: [String : String]?, object: Any?) -> UIViewController? {
-        return UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+    static func routePageCreated(with url: String?,
+                                 parameters: [String: String]?,
+                                 object: Any?) -> UIViewController? {
+        return UIStoryboard(name: "Main", bundle: nil)
+            .instantiateInitialViewController()
     }
 }
 
 extension String {
-	public var urlEncoded: String? {
-		return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-	}
+    public var urlEncoded: String? {
+        return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+    }
 }
-
 
 extension UIView {
     /// 添加填满父view的约束
     func addConstraintFillSuperView() {
         if let superview = superview {
-            self.translatesAutoresizingMaskIntoConstraints = false
+            translatesAutoresizingMaskIntoConstraints = false
             let top = NSLayoutConstraint(item: self, attribute: .top, relatedBy: .equal, toItem: superview, attribute: .top, multiplier: 1, constant: 0)
             let left = NSLayoutConstraint(item: self, attribute: .leading, relatedBy: .equal, toItem: superview, attribute: .leading, multiplier: 1, constant: 0)
             let bottom = NSLayoutConstraint(item: self, attribute: .bottom, relatedBy: .equal, toItem: superview, attribute: .bottom, multiplier: 1, constant: 0)
@@ -158,7 +158,6 @@ extension UIView {
     }
 }
 
-
 extension UIColor {
     public static var random: UIColor {
         let randomRed = CGFloat.random()
@@ -166,7 +165,6 @@ extension UIColor {
         let randomBlue = CGFloat.random()
         return UIColor(red: randomRed, green: randomGreen, blue: randomBlue, alpha: 1.0)
     }
-    
 }
 
 extension CGFloat {
@@ -174,4 +172,3 @@ extension CGFloat {
         return CGFloat.random(in: 0.0..<1.0)
     }
 }
-

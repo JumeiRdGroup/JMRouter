@@ -1,11 +1,15 @@
 # JMRouter
 
-一个轻量级，纯Swift，协议化的路由控件
+一个轻量级，纯Swift，协议化的路由控件，[使用demo](https://github.com/JumeiRdGroup/JMRouter)
+
+
 
 ## 要求
 
 - iOS 8.0+ 
 - Swift 5.0+
+
+
 
 ## 安装
 
@@ -13,22 +17,60 @@
 pod 'JMRouter'
 ```
 
+
+
 ## 使用
 
-JMRouter目前支持跳转某个controller 如下
+1. 自定义一个enum，实现JMRoutePage协议，每个case，表示该controller的唯一路径
 
 ```
-/// 1. 跳转界面可以用类似下面格式url
+enum Page: String, JMRoutePage {
+    case home //key和约定的字符串一致
+    case vc1 
+    case vc2 = "nibVc" //key和约定的字符串不一致时
+}
+```
+
+2. 想要一个controller支持路由跳转，需要实现JMRoutable协议，比如
+
+```
+extension HomeController: JMRoutable {
+    static var routePage: JMRoutePage {
+        return Page.home
+    }
+    
+    static func routePageCreated(with url: String?,
+                                 parameters: [String: String]?,
+                                 object: Any?) -> UIViewController? {
+        return UIStoryboard(name: "Main", bundle: nil)
+            .instantiateInitialViewController()
+    }
+}
+```
+
+3. 可以使用下面2种方式跳转，可以带额外参数，并提供跳转完成回调
+
+```
+/// 应用内使用枚举方式跳转更方便
+JMRouter.goto(Page.home, from: self, object: UIColor.random) { resrult, _ in
+    YYHud.showTip(resrult ? "操作成功" : "操作失败")
+}
+```
+
+```
+/// 使用url跳转
+JMRouter.routing(with: "scheme1://page/home?title="地图") { resrult, _ in
+    YYHud.showTip(resrult ? "操作成功" : "操作失败")
+}
+```
+
+url类似下面这种格式，lastPathComponent为界面，可以带参数
+
+```
 /// scheme1://page/map?title="地图"
 ```
 
-使用时只需执行对应的一行代码即可
-
-```
-JMRouter.routing(with: "scheme1://page/map?title="地图")
-```
-
-routing完整定义如下
+#### routing完整定义如下
 
 ```
 /// 通过url 来跳转对应页面, 或执行某个action
@@ -46,18 +88,7 @@ public static func routing(with urlString: String,
                           completion: Completion? = nil) -> Bool
 ```
 
-另外如果是应用内使用，建议用枚举的模式，更方便
-
-```
-/// 应用内使用枚举方式跳转更方便
-JMRouter.goto(Page.home, from: self) { resrult, homeVc in
-  YYHud.showTip(resrult ? "操作成功" : "操作失败")
-}
-```
-
-当然，为了能简单使用，我们还会有些使用前准备工作😀
-
-1. 使用前需要调用一次 
+4. 在使用前需要调用一次路由注册
 
 ```
 static func setup(with appDelegate: UIApplicationDelegate,
@@ -65,39 +96,9 @@ static func setup(with appDelegate: UIApplicationDelegate,
                   pageHost: String = "page")
 ```
 
-2. 想要一个controller支持路由跳转，需要实现JMRoutable协议，比如
-
-```
-extension ViewControllerWithNib: JMRoutable {
-    static var routePage: JMRoutePage {
-        return Page.vc2
-    }
-    
-	static func routePageCreated(with url: String?,
-                                 parameters: [String : String]?, object: Any?)
-        -> UIViewController? {
-        let vc = ViewControllerWithNib()
-        vc.title = parameters?["title"]
-        vc.view.backgroundColor = object as? UIColor
-        return vc
-    }
-}
-```
-
-3. 自定义一个enum，实现JMRoutePage协议，每个case，表示该controller的唯一路径
-
-```
-/// 声明哪些controller支持路由跳转
-enum Page: String, JMRoutePage {
-    case home
-    case vc1 //key和约定的字符串一致时
-    case vc2 = "nibVc" //key和约定的字符串不一致时
-}
-```
-
-4. 没有了，没有了，没有了😜
-
 demo中更为详细的例子，使用前可以先看看
+
+
 
 ## 更详细的说明
 
@@ -106,7 +107,7 @@ demo中更为详细的例子，使用前可以先看看
 分别取url的
 
 - scheme：表示支持的协议，可以配置多个
-- host：表示执行操作的类型，默认是page，之前还支持action，不过发现不好单独提取出来，可能需要自己支持吧
+- host：表示执行操作的类型，默认是page，之前还支持action，不过发现不好单独提取出来，需要自己支持吧
 - lastPathComponent：表示执行的具体操作，比如跳转到地图页
 
 这些配置在每个项目中可能都有自己的规则，所以可以根据需求自行调整😀
@@ -178,6 +179,8 @@ static func registerPathMap(with appDelegate: UIApplicationDelegate) {
     }
 }
 ```
+
+
 
 ## License
 
