@@ -23,7 +23,7 @@ pod 'JMRouter'
 
 1. 自定义一个enum，实现JMRoutePage协议，每个case，表示该controller的唯一路径
 
-```
+```swift
 enum Page: String, JMRoutePage {
     case home //key和约定的字符串一致
     case vc1 
@@ -33,7 +33,7 @@ enum Page: String, JMRoutePage {
 
 2. 想要一个controller支持路由跳转，需要实现JMRoutable协议，比如
 
-```
+```swift
 extension HomeController: JMRoutable {
     static var routePage: JMRoutePage {
         return Page.home
@@ -50,14 +50,14 @@ extension HomeController: JMRoutable {
 
 3. 可以使用下面2种方式跳转，可以带额外参数，并提供跳转完成回调
 
-```
+```swift
 /// 应用内使用枚举方式跳转更方便
 JMRouter.goto(Page.home, from: self, object: UIColor.random) { resrult, _ in
     YYHud.showTip(resrult ? "操作成功" : "操作失败")
 }
 ```
 
-```
+```swift
 /// 使用url跳转
 JMRouter.routing(with: "scheme1://page/home?title="地图") { resrult, _ in
     YYHud.showTip(resrult ? "操作成功" : "操作失败")
@@ -66,13 +66,13 @@ JMRouter.routing(with: "scheme1://page/home?title="地图") { resrult, _ in
 
 url类似下面这种格式，lastPathComponent为界面，可以带参数
 
-```
+```swift
 /// scheme1://page/map?title="地图"
 ```
 
 #### routing完整定义如下
 
-```
+```swift
 /// 通过url 来跳转对应页面, 或执行某个action
 ///
 /// - Parameters:
@@ -90,7 +90,7 @@ public static func routing(with urlString: String,
 
 4. 在使用前需要调用一次路由注册
 
-```
+```swift
 static func setup(with appDelegate: UIApplicationDelegate,
                   schemes: [String],
                   pageHost: String = "page")
@@ -114,7 +114,7 @@ demo中更为详细的例子，使用前可以先看看
 
 **scheme和host定义在JMRouter.swift文件中，通过setup参数初始化**
 
-```
+```swift
 /// 支持的schemes
 public static private(set) var schemes = [""]
 public static private(set) var pageHost = "page"
@@ -122,7 +122,7 @@ public static private(set) var pageHost = "page"
 
 **lastPathComponent的Page部分在自己工程中定义，使用枚举**
 
-```
+```swift
 /// 声明哪些controller支持路由跳转
 enum Page: String, JMRoutePage {
     case home
@@ -137,7 +137,7 @@ enum Page: String, JMRoutePage {
 
 **JMRouter+Page.swift**中**goto**函数里用来跳转的vc，优先使用传入的vc，否则使用app top
 
-```
+```swift
 /// 通过枚举来跳转对应页面
 @discardableResult
 static func goto(_ page: JMRoutePage,
@@ -160,7 +160,7 @@ static func goto(_ page: JMRoutePage,
 
 JMRouter.setup方法内部会调用registerPathMap，遍历主工程中所有类，判断是否实现JMRoutable协议来自动注册映射关系，可能会有点耗时。根据我们自己项目测试来看，大概几W个类，1秒内完成，所有看情况这步可以优化。。
 
-```
+```swift
 /// 遍历所有的类，检测是否实现Routable，存入字典作为映射表，使用Router前必须先调用
 static func registerPathMap(with appDelegate: UIApplicationDelegate) {
     var count: UInt32 = 0
